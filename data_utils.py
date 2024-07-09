@@ -1,6 +1,7 @@
 import os
 import torch
 import pandas as pd
+import timm
 from torchvision import datasets, transforms, models
 
 DATASET_ROOTS = {"imagenet_val": "YOUR_PATH/ImageNet_val/",
@@ -30,6 +31,21 @@ def get_target_model(target_name, device):
         weights = eval("models.{}_Weights.IMAGENET1K_V1".format(target_name_cap))
         preprocess = weights.transforms()
         target_model = eval("models.{}(weights=weights).to(device)".format(target_name))
+    elif "gelu" in target_name:
+        checkpoint_path = "data/{}.pth".format(target_name)
+        target_model = timm.models.create_model("resnet50", checkpoint_path=checkpoint_path, pretrained=False)
+        # Replace with gelu
+        def replace_layers(model, old, new):
+            for n, module in model.named_children():
+                if len(list(module.children())) > 0:
+                    ## compound module, go inside it
+                    replace_layers(module, old, new)
+                if isinstance(module, old):
+                    ## simple module
+                    setattr(model, n, new)
+        replace_layers(target_model, torch.nn.ReLU, torch.nn.GELU())
+        #TODO - Don't understand this, might break
+        preprocess = get_resnet_imagenet_preprocess()
     elif "resnet" in target_name:
         target_name_cap = target_name.replace("resnet", "ResNet")
         weights = eval("models.{}_Weights.IMAGENET1K_V1".format(target_name_cap))
