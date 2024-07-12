@@ -62,9 +62,8 @@ def main(args):
     subfigs = fig.subfigures(nrows=len(neurons_to_check), ncols=1)
     for j, orig_id in enumerate(neurons_to_check):
         vals, ids = torch.topk(similarities[orig_id], k=5, largest=True)
-            
         subfig = subfigs[j]
-        subfig.text(0.13, 0.96, "Neuron {}:".format(int(orig_id)), size=font_size)
+        subfig.text(0.13, 0.96, f"Neuron {int(orig_id)}:", size=font_size)
         subfig.text(0.27, 0.96, "CLIP-Dissect:", size=font_size)
         subfig.text(0.4, 0.96, words[int(ids[0])], size=font_size)
         axs = subfig.subplots(nrows=1, ncols=5)
@@ -73,6 +72,10 @@ def main(args):
             im = im.resize([375,375])
             axs[i].imshow(im)
             axs[i].axis('off')
+    
+    # Save the figure instead of displaying it
+    plt.savefig('neuron_activations.png', dpi=300, bbox_inches='tight')
+    plt.close(fig)  # Close the figure to free up memory
 
 if __name__ == '__main__':
     args = parser.parse_args()
