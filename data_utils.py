@@ -32,7 +32,7 @@ def get_target_model(target_name, device):
         preprocess = weights.transforms()
         target_model = eval("models.{}(weights=weights).to(device)".format(target_name))
     elif "gelu" in target_name:
-        checkpoint_path = "data/{}.pth".format(target_name)
+        checkpoint_path = "data/{}.pth.tar".format(target_name)
         target_model = timm.models.create_model("resnet50", checkpoint_path=checkpoint_path, pretrained=False)
         # Replace with gelu
         def replace_layers(model, old, new):

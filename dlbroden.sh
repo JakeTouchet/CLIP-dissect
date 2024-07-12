@@ -19,6 +19,7 @@ rm broden1_224.zip
 #remove unneeded files
 pushd broden1_224
 #rm *.csv
+#TODO- Don't know why they're removing all this crap, might break
 rm *.txt
 rm images/ade20k/*object.png
 rm images/ade20k/*color.png
