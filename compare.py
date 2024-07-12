@@ -32,17 +32,20 @@ parser.add_argument("--pool_mode", type=str, default="avg", help="Aggregation fu
 parser.add_argument("--similarity_fn", type=str, default="soft_wpmi", 
                     choices=["soft_wpmi", "wpmi", "rank_reorder", "cos_similarity", "cos_similarity_cubed"])
 
-def process_model(args, target_model, similarities, target_feats, words, pil_data):
-    neurons_to_check = list(range(10))  # First 10 neurons
+def process_model(args, target_model, similarities, target_feats, words, pil_data, neurons_to_check):
     top_vals, top_ids = torch.topk(target_feats.float(), k=5, dim=0)
     
-    fig = plt.figure(figsize=[15, len(neurons_to_check)*2])
+    fig = plt.figure(figsize=[20, len(neurons_to_check)*3])  # Increased figure size
     subfigs = fig.subfigures(nrows=len(neurons_to_check), ncols=1)
     
     for j, orig_id in enumerate(neurons_to_check):
         vals, ids = torch.topk(similarities[orig_id], k=5, largest=True)
         subfig = subfigs[j]
-        subfig.suptitle(f"{target_model} - Neuron {int(orig_id)}: CLIP-Dissect: {words[int(ids[0])]}", fontsize=14)
+        
+        # Use two lines for the title to prevent overlap
+        subfig.suptitle(f"{target_model} - Neuron {int(orig_id)}:\nCLIP-Dissect: {words[int(ids[0])]}", 
+                        fontsize=12, y=1.05)
+        
         axs = subfig.subplots(nrows=1, ncols=5)
         for i, (top_id, val) in enumerate(zip(top_ids[:, orig_id], top_vals[:, orig_id])):
             im, label = pil_data[top_id]
@@ -51,6 +54,7 @@ def process_model(args, target_model, similarities, target_feats, words, pil_dat
             axs[i].set_title(f"Value: {val:.4f}", fontsize=10)
             axs[i].axis('off')
     
+    plt.tight_layout()  # Adjust the layout to prevent overlap
     return fig
 
 def main(args):
