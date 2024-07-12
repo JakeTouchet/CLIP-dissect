@@ -44,6 +44,7 @@ def get_target_model(target_name, device):
                     ## simple module
                     setattr(model, n, new)
         replace_layers(target_model, torch.nn.ReLU, torch.nn.GELU())
+        target_model.to(device)
         #TODO - Don't understand this, might break
         preprocess = get_resnet_imagenet_preprocess()
     elif "resnet" in target_name:
