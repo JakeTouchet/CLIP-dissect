@@ -166,6 +166,7 @@ def main(args):
     # Process each target model
     for target_model in [args.target_model1, args.target_model2]:
         # Generate save names for activations
+        print(f"Processing {target_model}...")
         save_names = utils.get_save_names(clip_name=args.clip_model, target_name=target_model,
                                     target_layer=target_layer, d_probe=args.d_probe,
                                     concept_set=args.concept_set, pool_mode=args.pool_mode,
@@ -173,12 +174,14 @@ def main(args):
         target_save_name, clip_save_name, text_save_name = save_names
         
         # Compute similarities between neurons and concepts
+        print("Computing similarities...")
         similarities, target_feats = utils.get_similarity_from_activations(target_save_name, clip_save_name, 
                                                                     text_save_name, similarity_fn)
 
         # Process the model and generate visualizations
+        print("Processing model...")
         fig, top_concepts = process_model(args, target_model, similarities, target_feats, words, pil_data, 
-                                          list(range(similarities.shape[0])))
+                                          list(range(similarities.shape[0][:10])))
         
         # Save the figure
         plt.savefig(os.path.join(args.vis_results_dir, f'{target_model}_neuron_activations.png'), dpi=300, bbox_inches='tight')
@@ -187,6 +190,7 @@ def main(args):
         model_results[target_model] = {'top_concepts': top_concepts, 'target_feats': target_feats}
 
     # Create and save the comparison figure
+    print("Creating comparison figure...")
     comparison_fig = compare_models(args, model_results[args.target_model1]['top_concepts'], 
                                     model_results[args.target_model2]['top_concepts'],
                                     model_results[args.target_model1]['target_feats'],
