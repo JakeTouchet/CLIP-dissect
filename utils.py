@@ -159,6 +159,7 @@ def get_similarity_from_activations(target_save_name, clip_save_name, text_save_
     del image_features, text_features
     torch.cuda.empty_cache()
     
+    # target_feats is the activation vector for each neuron
     target_feats = torch.load(target_save_name, map_location='cpu')
     similarity = similarity_fn(clip_feats, target_feats, device=device)
     
