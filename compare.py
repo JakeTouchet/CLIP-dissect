@@ -181,7 +181,7 @@ def main(args):
         # Process the model and generate visualizations
         print("Processing model...")
         fig, top_concepts = process_model(args, target_model, similarities, target_feats, words, pil_data, 
-                                          list(range(similarities.shape[0][:10])))
+                                          list(range(similarities.shape[0]))[:10])
         
         # Save the figure
         plt.savefig(os.path.join(args.vis_results_dir, f'{target_model}_neuron_activations.png'), dpi=300, bbox_inches='tight')
