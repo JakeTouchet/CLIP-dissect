@@ -52,7 +52,13 @@ def get_target_model(target_name, device):
         weights = eval("models.{}_Weights.IMAGENET1K_V1".format(target_name_cap))
         preprocess = weights.transforms()
         target_model = eval("models.{}(weights=weights).to(device)".format(target_name))
-    
+    # Load from pth.tar
+    else:
+        checkpoint_path = "data/{}.pth.tar".format(target_name)
+        target_model = timm.models.create_model("resnet18", checkpoint_path=checkpoint_path, pretrained=False)
+        target_model.to(device)
+        preprocess = get_resnet_imagenet_preprocess()
+
     target_model.eval()
     return target_model, preprocess
 

@@ -1,0 +1,9 @@
+ftfy
+regex
+tqdm
+black
+isort
+pandas
+matplotlib
+scipy
+huggingface-hub
